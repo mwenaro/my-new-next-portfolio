@@ -1,6 +1,3 @@
-Certainly! Here's an updated README.md content for your repository, incorporating the dependencies and devDependencies you provided:
-
----
 
 # Mwero Abdalla Developer Portfolio
 
