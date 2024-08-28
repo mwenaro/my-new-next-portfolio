@@ -53,6 +53,7 @@ export async function submitFormAction(
     });
 
     const res = await sendThankYouEmail(email);
+    console.log({res})
     if (res.success) {
       return {
         message: `🎉 Thank you for reaching out! Your message has been successfully sent. We'll get back to you shortly. 📬`,
@@ -195,7 +196,7 @@ export const sendThankYouEmail = async (email: string) => {
       throw new Error("Please set the RESEND_API_KEY environment variable.");
     }
     await mailServer.emails.send({
-      from: "DevRam <from-email-goes-here>",
+      from: "Mwero Abdalla <onboarding@resend.dev>",
       to: email,
       subject: "Glad to hear from you!",
       html: thankYouEmailTemplate,
