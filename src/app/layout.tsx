@@ -3,6 +3,7 @@ import { Toaster } from '@/components/ui/sonner'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import Wrapper from '@/components/Wrapper'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -27,13 +28,8 @@ export default function RootLayout({
         <Favicon />
       </head>
       <body className={inter.className}>
-        <div>
-          <Header />
-          <main className='bg-page-gradient pt-navigation-height'>
-            {children}
-          </main>
-          <Footer />
-        </div>
+        {/* include wrapper herfe */}
+        <Wrapper>{children}</Wrapper>
         <Toaster
           position='top-right'
           toastOptions={{

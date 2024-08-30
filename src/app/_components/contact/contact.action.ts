@@ -195,12 +195,14 @@ export const sendThankYouEmail = async (email: string) => {
     if (!mailServer) {
       throw new Error("Please set the RESEND_API_KEY environment variable.");
     }
-    await mailServer.emails.send({
+ let mailerRes =    await mailServer.emails.send({
       from: "Mwero Abdalla <onboarding@resend.dev>",
       to: email,
       subject: "Glad to hear from you!",
       html: thankYouEmailTemplate,
     });
+
+    console.log({mailerRes})
     return {
       success: true,
       message:
