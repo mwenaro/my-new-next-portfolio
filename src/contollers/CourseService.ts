@@ -20,7 +20,7 @@ class CourseService {
   }
 
   async getAll(): Promise<ICourse[]> {
-    return Course.find().populate(['school', 'class', 'teachers']).exec();
+    return Course.find().sort({name:1, "class.name":1}).populate(['school', 'class', 'teachers']).exec();
   }
 
   async update(id: string, data: Partial<ICourse>): Promise<ICourse | null> {

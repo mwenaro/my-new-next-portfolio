@@ -15,7 +15,8 @@ export interface ICourse extends Document {
 const courseSchema: Schema = new Schema({
   name: {
     type: String,
-    required: true
+    required: true,
+    unique:true
   },
   class: {
     type: Schema.Types.ObjectId,

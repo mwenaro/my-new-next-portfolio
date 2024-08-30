@@ -13,6 +13,7 @@ const subjectSchema: Schema = new Schema({
   name: {
     type: String,
     required: true
+    
   },
   shortName: {
     type: String,
