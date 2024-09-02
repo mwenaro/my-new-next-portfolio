@@ -43,7 +43,7 @@ const ConfirmationEmail = ({
             <Text className="text-2xl mb-2.5">Thank You for Your Message!</Text>
             <Text className="text-base leading-6">
               Thank you for reaching out! Your message has been received, and
-              I'll get back to you as soon as possible.
+              I&apos;ll get back to you as soon as possible.
             </Text>
             <Text className="text-sm leading-none">
               Best regards,
