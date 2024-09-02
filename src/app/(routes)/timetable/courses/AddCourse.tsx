@@ -4,50 +4,44 @@ import React, { useState, useEffect } from "react";
 import { IClass } from "@/models/Class";
 import { ISchool } from "@/models/School";
 import { useRouter } from "next/navigation";
+import { ICourse } from "@/models/Course";
 
 interface AddCourseProps {
   //   onCourseAdded: () => void;
+  schools: ISchool[];
+  classes: IClass[];
+  teachers: ITeacher[];
+  selectedCourse: null | ICourse;
 }
 
-const AddCourse: React.FC<AddCourseProps> = ({}) => {
-  const [name, setName] = useState("");
-  const [selectedClass, setSelectedClass] = useState("");
-  const [selectedSchool, setSelectedSchool] = useState("");
-  const [selectedTeachers, setSelectedTeachers] = useState<string[]>([]);
-  const [schools, setSchools] = useState<ISchool[]>([]);
-  const [classes, setClasses] = useState<IClass[]>([]);
-  const [teachers, setTeachers] = useState<ITeacher[]>([]);
-const router = useRouter()
-  useEffect(() => {
-    // Fetch schools, classes, and teachers from the database
-    const fetchData = async () => {
-      const [schoolResponse, classesResponse, teachersResponse] =
-        await Promise.all([
-          fetch("/api/timetable/school"),
-          fetch("/api/timetable/class"),
-          fetch("/api/timetable/teacher"),
-        ]);
+const AddCourse: React.FC<AddCourseProps> = ({
+  schools,
+  classes,
+  teachers,
+  selectedCourse = null
+}: AddCourseProps) => {
+  // const [name, setName] = useState("");
+  // const [selectedClass, setSelectedClass] = useState("");
+  // const [selectedSchool, setSelectedSchool] = useState("");
+  // const [selectedTeachers, setSelectedTeachers] = useState<string[]>([]);
+  const defaultCourse = {
+    name: "",
+    class: "",
+    teachers: [],
+    school: "",
+  };
+  const [newCourse, setNewCourse] = useState<ICourse|any>(selectedCourse??defaultCourse);
 
-      const [school, classes, teachers] = await Promise.all([
-        schoolResponse.json(),
-        classesResponse.json(),
-        teachersResponse.json(),
-      ]);
-      setSchools(school.data);
-      setClasses(classes.data);
-      setTeachers(teachers.data);
-    };
-
-    fetchData();
-  }, [schools, classes, teachers]);
+  const router = useRouter();
+  // Fetch schools, classes, and teachers from the database
 
   const handleAddCourse = async () => {
-    const newCourse = {
-      name,
-      class: selectedClass,
-      school: selectedSchool,
-      teachers: selectedTeachers,
-    };
+    // const newCourse = {
+    //   name,
+    //   class: selectedClass,
+    //   school: selectedSchool,
+    //   teachers: selectedTeachers,
+    // };
 
     try {
       const res = await fetch("/api/timetable/course", {
@@ -56,14 +50,15 @@ const router = useRouter()
       });
       if (!res.ok) throw Error("Someting went wrong");
       // onCourseAdded();
-    //   alert("Course Added");
-    //force a page reload
-    router.refresh()
+      //   alert("Course Added");
+      //force a page reload
+      router.refresh();
 
-      setName("");
-      setSelectedClass("");
-      setSelectedSchool("");
-      setSelectedTeachers([]);
+      // setName("");
+      // setSelectedClass("");
+      // setSelectedSchool("");
+      setNewCourse(defaultCourse)
+      // setSelectedTeachers([]);
     } catch (error: any) {
       alert("Error " + error.message);
     }
@@ -79,16 +74,16 @@ const router = useRouter()
         <input
           type="text"
           className="w-full p-2 border rounded bg-gray-500"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={newCourse.name}
+          onChange={(e) => setNewCourse({...newCourse , name:e.target.value})}
         />
       </div>
       <div className="mb-4">
         <label className="block mb-2">Select School</label>
         <select
           className="w-full p-2 border rounded bg-gray-500"
-          value={selectedSchool}
-          onChange={(e) => setSelectedSchool(e.target.value)}
+          value={newCourse.school}
+          onChange={(e) => setNewCourse({...newCourse , school:e.target.value})}
         >
           <option value="">Select a school</option>
           {schools.map((school: ISchool) => (
@@ -102,8 +97,8 @@ const router = useRouter()
         <label className="block mb-2">Select Class</label>
         <select
           className="w-full p-2 border rounded bg-gray-500"
-          value={selectedClass}
-          onChange={(e) => setSelectedClass(e.target.value)}
+          value={newCourse.class}
+          onChange={(e) => setNewCourse({...newCourse , class:e.target.value})}
         >
           <option value="">Select a class</option>
           {classes.map((cls) => (
@@ -116,17 +111,20 @@ const router = useRouter()
       <div className="mb-4">
         <label className="block mb-2">Select Teachers</label>
         {teachers.map((teacher) => (
-          <div key={teacher._id as string} className="flex items-center mb-2">
+          <div
+            key={teacher._id as string}
+            className="grid grid-cols-1 md:grid-cols-3"
+          >
             <input
               type="checkbox"
               value={teacher._id as string}
-              checked={selectedTeachers.includes(teacher._id as string)}
+              checked={newCourse.teachers.includes(teacher._id as string)}
               onChange={(e) => {
                 const value = e.target.value;
-                setSelectedTeachers((prev) =>
-                  prev.includes(value)
-                    ? prev.filter((id) => id !== value)
-                    : [...prev, value]
+                setNewCourse((prev:any) =>
+                  prev.teachers.includes(value)
+                    ? prev.teachers.filter((id:string) => id !== value)
+                    : [...prev.teachers, value]
                 );
               }}
               className="mr-2"

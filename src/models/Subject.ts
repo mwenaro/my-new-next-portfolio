@@ -26,4 +26,4 @@ const subjectSchema: Schema = new Schema({
   }
 }, { timestamps: true });
 
-export const Subject = mongoose.models.Subject || mongoose.model<ISubject>('Subject', subjectSchema);
+export const Subject = mongoose.models?.Subject || mongoose.model<ISubject>('Subject', subjectSchema);

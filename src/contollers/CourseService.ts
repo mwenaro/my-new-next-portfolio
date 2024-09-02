@@ -6,6 +6,7 @@ class CourseService {
     dbCon();
   }
 
+
   async create(data: Partial<ICourse> | Partial<ICourse>[]): Promise<ICourse | ICourse[]> {
     if (Array.isArray(data)) {
       return Course.insertMany(data);
@@ -30,6 +31,8 @@ class CourseService {
   async delete(id: string): Promise<ICourse | null> {
     return Course.findByIdAndDelete(id).exec();
   }
+
+  
 }
 
 export const courseService = new CourseService();

@@ -25,4 +25,4 @@ const schoolSchema: Schema = new Schema({
   }
 }, { timestamps: true });
 
-export const School = mongoose.models.School || mongoose.model<ISchool>('School', schoolSchema);
+export const School = mongoose.models?.School || mongoose.model<ISchool>('School', schoolSchema);
