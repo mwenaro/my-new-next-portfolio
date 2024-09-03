@@ -1,7 +1,7 @@
 import { classService } from "@/contollers/ClassService";
 import { NextRequest, NextResponse } from "next/server";
-import * as seedindData from '@/models/seedingData'
-import { IClass } from "@/models/Class";
+// import * as seedindData from '@/models/seedingData'
+// import { IClass } from "@/models/Class";
 
 export async function GET(req: NextRequest) {
   try {

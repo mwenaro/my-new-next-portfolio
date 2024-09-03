@@ -1322,6 +1322,8 @@ function validTeachers(subjectTrs, sessionTrs) {
 
 const generateTimetable = (data) => {
   const timetable = {};
+
+  // Initialize timetable structure
   days.forEach((day) => {
     timetable[day] = {};
     timePeriods.forEach((period) => {
@@ -1329,32 +1331,41 @@ const generateTimetable = (data) => {
     });
   });
 
-  // console.log({timetable})
+  // Populate the timetable
   data.forEach((subject) => {
     const { class: classInfo, teachers, name } = subject;
     const { name: className } = classInfo;
-    
+
+    // Track session teachers to avoid collisions
+    const sessionTrs = {};
+
     days.forEach((day) => {
-      let sessionTrs = [];
-      timePeriods.forEach((period, index) => {
-        const subTrs = subject.teachers.map(tr=>tr._id)
-        if (
-          timetable[day][period.period].length < 4 &&
-          validTeachers(subTrs, sessionTrs)
-        ) {
-          // console.log({subTrs, sessionTrs})
-          sessionTrs.push(...subTrs);
-          timetable[day][period.period].push({
-            subject: name,
-            class: className,
-            teacher: teachers[index % teachers.length].name,
-          });
+      timePeriods.forEach((period) => {
+        if (timetable[day][period.period].length < 4) {
+          const subTrs = subject.teachers.map((tr) => tr._id);
+
+          if (!sessionTrs[day]) {
+            sessionTrs[day] = [];
+          }
+
+          if (validTeachers(subTrs, sessionTrs[day])) {
+            sessionTrs[day].push(...subTrs);
+
+            const teacherIndex = timetable[day][period.period].length % teachers.length;
+            timetable[day][period.period].push({
+              subject: name,
+              class: className,
+              teacher: teachers[teacherIndex].name,
+            });
+          }
         }
       });
     });
   });
-  console.log({timetable:timetable['Monday']['Period 1']})
+
+  console.log({ timetable: timetable['Monday']['Period 1'] });
   return timetable;
 };
 
+// Example usage with your data
 generateTimetable(populatedCourses);
