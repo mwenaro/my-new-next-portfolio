@@ -33,5 +33,6 @@ const courseSchema: Schema = new Schema({
     ref: 'Teacher'
   }]
 }, { timestamps: true });
+// Pre hook to populate references automatically
 
 export const Course = mongoose.models?.Course || mongoose.model<ICourse>('Course', courseSchema);

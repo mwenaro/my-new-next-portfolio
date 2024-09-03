@@ -14,7 +14,7 @@ const CoursesList: React.FC<Props> = ({courses, setSeletedCourse}) => {
     return <h4>No courses here</h4>;
 
   return (
-    <div>
+    <div className="w-full ">
       <h2 className="text-2xl font-semibold mb-4">Courses List</h2>
       <div className="space-y-2">
         {courses.length? courses.map((course: ICourse) => <CourseCard 

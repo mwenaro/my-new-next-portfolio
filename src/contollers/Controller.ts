@@ -1,4 +1,4 @@
-import { Model, Document } from 'mongoose';
+import { Model, Document } from "mongoose";
 import { dbCon } from "@/libs/mongoose/dbCon";
 
 export class Controller<T extends Document> {
@@ -7,11 +7,15 @@ export class Controller<T extends Document> {
   constructor(model: Model<T>) {
     this.model = model;
     dbCon(); // Ensure the DB connection is established
+    // this.loadDB();
   }
-
+  async loadDB() {
+    await dbCon();
+  }
   async create(data: Partial<T>): Promise<T> {
     const document = new this.model(data);
-    return document.save();
+
+    return await document.save();
   }
 
   async createMany(data: Partial<T>[]): Promise<any[]> {

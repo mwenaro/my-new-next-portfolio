@@ -33,7 +33,7 @@ export default function CourseCard({
       {/* <UpdateButton selectedCourse={JSON.stringify(course)} path={"/course"} /> */}
       <Button
         className="bg-orange-600"
-        onClick={() => setSelectedCourse(course)}
+        onClick={() =>setSelectedCourse(course)}
       >
         Edit
       </Button>

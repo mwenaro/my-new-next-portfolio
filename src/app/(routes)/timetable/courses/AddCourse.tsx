@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { ICourse } from "@/models/Course";
 
 interface AddCourseProps {
-  //   onCourseAdded: () => void;
   schools: ISchool[];
   classes: IClass[];
   teachers: ITeacher[];
@@ -18,54 +17,65 @@ const AddCourse: React.FC<AddCourseProps> = ({
   schools,
   classes,
   teachers,
-  selectedCourse = null
+  selectedCourse = null,
 }: AddCourseProps) => {
-  // const [name, setName] = useState("");
-  // const [selectedClass, setSelectedClass] = useState("");
-  // const [selectedSchool, setSelectedSchool] = useState("");
-  // const [selectedTeachers, setSelectedTeachers] = useState<string[]>([]);
   const defaultCourse = {
     name: "",
     class: "",
-    teachers: [],
+    teachers: [] as string[],
     school: "",
   };
-  const [newCourse, setNewCourse] = useState<ICourse|any>(selectedCourse??defaultCourse);
 
-  const router = useRouter();
-  // Fetch schools, classes, and teachers from the database
+  const [newCourse, setNewCourse] = useState<ICourse | any>(defaultCourse);
+
+  // Update form fields whenever selectedCourse changes
+  useEffect(() => {
+    if (selectedCourse) {
+      setNewCourse({
+        name: selectedCourse.name,
+        class: (selectedCourse?.class as IClass)?._id,
+        teachers: (selectedCourse.teachers as ITeacher[]).map((tr) => tr._id),
+        school: (selectedCourse?.school as ISchool)?._id,
+      });
+    } else {
+      setNewCourse(defaultCourse);
+    }
+  }, [selectedCourse]);
+
+  // const router = useRouter();
+
+  // useEffect(() => {
+  //   console.log({ selectedCourse});
+  // }, [selectedCourse]);
 
   const handleAddCourse = async () => {
-    // const newCourse = {
-    //   name,
-    //   class: selectedClass,
-    //   school: selectedSchool,
-    //   teachers: selectedTeachers,
-    // };
-
+    console.log({ newCourse });
     try {
-      const res = await fetch("/api/timetable/course", {
-        method: "POST",
-        body: JSON.stringify(newCourse),
-      });
-      if (!res.ok) throw Error("Someting went wrong");
-      // onCourseAdded();
-      //   alert("Course Added");
-      //force a page reload
-      router.refresh();
+      const res = selectedCourse?._id
+        ? await fetch("/api/timetable/course/" + selectedCourse._id, {
+            method: "PUT",
+            body: JSON.stringify(newCourse),
+            headers: { "Content-Type": "application/json" }, // Ensure correct header
+          })
+        : await fetch("/api/timetable/course", {
+            method: "POST",
+            body: JSON.stringify(newCourse),
+            headers: { "Content-Type": "application/json" },
+          });
 
-      // setName("");
-      // setSelectedClass("");
-      // setSelectedSchool("");
-      setNewCourse(defaultCourse)
-      // setSelectedTeachers([]);
+      if (!res.ok) throw new Error("Something went wrong");
+
+      // router.refresh();
+      alert("Add/update Succesesully!");
+      setNewCourse(defaultCourse);
     } catch (error: any) {
-      alert("Error " + error.message);
+      alert("Error: " + error.message);
     }
   };
 
   if (!schools.length || !classes.length || !teachers.length)
     return <h4>Loading ...</h4>;
+
   return (
     <div className="p-4 border rounded-lg shadow-md mb-4 bg-slate-400 text-red-700">
       <h2 className="text-xl font-semibold mb-4">Add Course</h2>
@@ -75,7 +85,7 @@ const AddCourse: React.FC<AddCourseProps> = ({
           type="text"
           className="w-full p-2 border rounded bg-gray-500"
           value={newCourse.name}
-          onChange={(e) => setNewCourse({...newCourse , name:e.target.value})}
+          onChange={(e) => setNewCourse({ ...newCourse, name: e.target.value })}
         />
       </div>
       <div className="mb-4">
@@ -83,7 +93,9 @@ const AddCourse: React.FC<AddCourseProps> = ({
         <select
           className="w-full p-2 border rounded bg-gray-500"
           value={newCourse.school}
-          onChange={(e) => setNewCourse({...newCourse , school:e.target.value})}
+          onChange={(e) =>
+            setNewCourse({ ...newCourse, school: e.target.value })
+          }
         >
           <option value="">Select a school</option>
           {schools.map((school: ISchool) => (
@@ -98,7 +110,9 @@ const AddCourse: React.FC<AddCourseProps> = ({
         <select
           className="w-full p-2 border rounded bg-gray-500"
           value={newCourse.class}
-          onChange={(e) => setNewCourse({...newCourse , class:e.target.value})}
+          onChange={(e) =>
+            setNewCourse({ ...newCourse, class: e.target.value })
+          }
         >
           <option value="">Select a class</option>
           {classes.map((cls) => (
@@ -110,34 +124,43 @@ const AddCourse: React.FC<AddCourseProps> = ({
       </div>
       <div className="mb-4">
         <label className="block mb-2">Select Teachers</label>
-        {teachers.map((teacher) => (
-          <div
-            key={teacher._id as string}
-            className="grid grid-cols-1 md:grid-cols-3"
-          >
-            <input
-              type="checkbox"
-              value={teacher._id as string}
-              checked={newCourse.teachers.includes(teacher._id as string)}
-              onChange={(e) => {
-                const value = e.target.value;
-                setNewCourse((prev:any) =>
-                  prev.teachers.includes(value)
-                    ? prev.teachers.filter((id:string) => id !== value)
-                    : [...prev.teachers, value]
-                );
-              }}
-              className="mr-2"
-            />
-            <label>{teacher.name}</label>
-          </div>
-        ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+          {teachers.map((teacher) => (
+            <div key={teacher._id as string}>
+              <input
+                type="checkbox"
+                value={teacher._id as string}
+                checked={newCourse.teachers?.includes(teacher._id)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setNewCourse((prev: any) =>
+                    prev.teachers?.includes(value)
+                      ? {
+                          ...prev,
+                          teachers: prev.teachers.filter(
+                            (id: string) => id !== value
+                          ),
+                        }
+                      : { ...prev, teachers: [...prev.teachers, value] }
+                  );
+                }}
+                className="mr-2"
+              />
+              <label>{teacher.name}</label>
+            </div>
+          ))}
+        </div>
       </div>
       <button
         onClick={handleAddCourse}
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        className="bg-blue-500 text-blue-600 px-4 py-2 rounded hover:bg-blue-600"
+        style={{
+          backgroundColor: "blue",
+          padding: "0.8rem 0.4rem",
+          color: "white",
+        }}
       >
-        Add Course
+        {selectedCourse?._id ? "Update Course" : "Add Course"}
       </button>
     </div>
   );

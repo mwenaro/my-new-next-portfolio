@@ -2,32 +2,28 @@
 import { useEffect, useState } from "react";
 import AddCourse from "./AddCourse";
 import CoursesList from "./CouseList";
-import { Modal } from "@/components/Modal"; // Import the new Modal component
 import { ISchool } from "@/models/School";
 import { IClass } from "@/models/Class";
 import { ITeacher } from "@/models/Teacher";
 import { ICourse } from "@/models/Course";
-import { Button } from "@/components/ui/button";
 
 const CoursesPage: React.FC = () => {
+  //   const courses = await courseService.getAll();
   const [schools, setSchools] = useState<ISchool[]>([]);
   const [classes, setClasses] = useState<IClass[]>([]);
   const [teachers, setTeachers] = useState<ITeacher[]>([]);
-  const [courses, setCourses] = useState<ICourse[]>([]);
+  const [coures, setCourses] = useState<ICourse[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<ICourse | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const setCourse = (course: ICourse | null) => {
     setSelectedCourse(null);
     setSelectedCourse(course);
-    setIsModalOpen(true); // Open the modal when a course is selected
+    console.log("course set ", course);
   };
 
+  useEffect(()=>{console.log(selectedCourse)}, [selectedCourse])
   useEffect(() => {
-    console.log(selectedCourse);
-  }, [selectedCourse]);
-
-  useEffect(() => {
+    // Fetch schools, classes, and teachers from the database
     const fetchData = async () => {
       const [
         schoolResponse,
@@ -47,7 +43,6 @@ const CoursesPage: React.FC = () => {
         teachersResponse.json(),
         coursesResponse.json(),
       ]);
-
       setSchools(school.data);
       setClasses(classes.data);
       setTeachers(teachers.data);
@@ -55,31 +50,30 @@ const CoursesPage: React.FC = () => {
     };
 
     fetchData();
-  }, []);
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedCourse(null);
-  };
-
+  }, [schools, classes, teachers]);
   return (
     <div
-      className="w-full container mx-auto p-4 bg-slate-200"
+      className="w-full container mx-auto p-4 bg-slate-200 grid grid-cols-1 sm:grid-cols-2 "
       style={{ color: "gray" }}
     >
-      <Button className="mr-auto" onClick={() => setIsModalOpen(!isModalOpen)}>
-        Add Course
-      </Button>
-      <CoursesList courses={courses} setSeletedCourse={setCourse} />
-
-      <Modal isOpen={isModalOpen} onClose={closeModal}>
+      {selectedCourse?._id ? (
+        <AddCourse
+        teachers={teachers}
+        classes={classes}
+        schools={schools}
+        selectedCourse={selectedCourse}
+      />
+      ) : (
         <AddCourse
           teachers={teachers}
           classes={classes}
           schools={schools}
           selectedCourse={selectedCourse}
         />
-      </Modal>
+      )}
+      <CoursesList
+    
+      courses={coures} setSeletedCourse={setCourse} />
     </div>
   );
 };
