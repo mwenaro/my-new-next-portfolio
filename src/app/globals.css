@@ -93,3 +93,18 @@
     box-shadow: 7px 0 white, 14px 0 white;
   }
 }
+
+@media print {
+  body {
+    background-color: white;
+    color:black;
+  }
+
+  .no-print {
+    display: none;
+  }
+
+  .print-area {
+    /* Specific styles for the printable area */
+  }
+}

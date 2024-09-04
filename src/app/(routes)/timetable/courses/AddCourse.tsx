@@ -1,6 +1,6 @@
 "use client";
 import { ITeacher } from "@/models/Teacher";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { IClass } from "@/models/Class";
 import { ISchool } from "@/models/School";
 import { useRouter } from "next/navigation";
@@ -17,14 +17,14 @@ const AddCourse: React.FC<AddCourseProps> = ({
   schools,
   classes,
   teachers,
-  selectedCourse = null,
+  selectedCourse = null
 }: AddCourseProps) => {
-  const defaultCourse = {
+  const defaultCourse = useMemo(() => ({
     name: "",
     class: "",
     teachers: [] as string[],
     school: "",
-  };
+  }), []);
 
   const [newCourse, setNewCourse] = useState<ICourse | any>(defaultCourse);
 
@@ -40,7 +40,7 @@ const AddCourse: React.FC<AddCourseProps> = ({
     } else {
       setNewCourse(defaultCourse);
     }
-  }, [selectedCourse]);
+  }, [selectedCourse, defaultCourse]);
 
   // const router = useRouter();
 
@@ -53,15 +53,15 @@ const AddCourse: React.FC<AddCourseProps> = ({
     try {
       const res = selectedCourse?._id
         ? await fetch("/api/timetable/course/" + selectedCourse._id, {
-            method: "PUT",
-            body: JSON.stringify(newCourse),
-            headers: { "Content-Type": "application/json" }, // Ensure correct header
-          })
+          method: "PUT",
+          body: JSON.stringify(newCourse),
+          headers: { "Content-Type": "application/json" }, // Ensure correct header
+        })
         : await fetch("/api/timetable/course", {
-            method: "POST",
-            body: JSON.stringify(newCourse),
-            headers: { "Content-Type": "application/json" },
-          });
+          method: "POST",
+          body: JSON.stringify(newCourse),
+          headers: { "Content-Type": "application/json" },
+        });
 
       if (!res.ok) throw new Error("Something went wrong");
 
@@ -136,11 +136,11 @@ const AddCourse: React.FC<AddCourseProps> = ({
                   setNewCourse((prev: any) =>
                     prev.teachers?.includes(value)
                       ? {
-                          ...prev,
-                          teachers: prev.teachers.filter(
-                            (id: string) => id !== value
-                          ),
-                        }
+                        ...prev,
+                        teachers: prev.teachers.filter(
+                          (id: string) => id !== value
+                        ),
+                      }
                       : { ...prev, teachers: [...prev.teachers, value] }
                   );
                 }}

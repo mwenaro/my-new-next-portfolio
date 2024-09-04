@@ -8,7 +8,7 @@ class CourseService extends Controller<ICourse>{
   }
 
   async getAll(): Promise<ICourse[]> {
-    return this.model.find().sort({name:1}).populate('class').populate('teachers').populate('school');
+    return await this.model.find().sort({name:1}).populate('class').populate('teachers').populate('school');
   }
 
 
