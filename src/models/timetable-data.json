@@ -1,7 +1,4 @@
-use('portfolio')
-db.courses.find({})
-
-const timetableData = {
+{
     "Monday": {
         "Period1": [
             {

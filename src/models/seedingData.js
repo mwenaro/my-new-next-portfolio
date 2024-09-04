@@ -1302,9 +1302,9 @@ const subject =  {
     };
 */
 const timePeriods = [
-  { period: "Period 1", time: "08:00 - 10:00" },
-  { period: "Period 2", time: "10:00 - 12:00" },
-  { period: "Period 3", time: "13:00 - 15:00" },
+  { period: "Period1", time: "08:00 - 10:00" },
+  { period: "Period2", time: "10:00 - 12:00" },
+  { period: "Period3", time: "13:00 - 15:00" },
 ];
 
 const days = [
@@ -1342,8 +1342,9 @@ const generateTimetable = (data) => {
           timetable[day][period.period].length < 4 &&
           validTeachers(subTrs, sessionTrs)
         ) {
-          // console.log({subTrs, sessionTrs})
-          sessionTrs.push(...subTrs);
+          // sessionTrs.push(...subTrs);
+          subTrs.forEach(sub=>sessionTrs.push(sub))
+          console.log({subTrs, sessionTrs, isValid:validTeachers(sessionTrs, sessionTrs)})
           timetable[day][period.period].push({
             subject: name,
             class: className,
@@ -1353,7 +1354,7 @@ const generateTimetable = (data) => {
       });
     });
   });
-  console.log({timetable:timetable['Monday']['Period 1']})
+  console.log({timetable:timetable['Monday']['Period1']})
   return timetable;
 };
 
